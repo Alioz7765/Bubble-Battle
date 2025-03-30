@@ -1,95 +1,92 @@
-const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
+// إعدادات اللعبة
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
 
+// ضبط حجم الـ canvas
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-// إعدادات الحركة
-let joystickX = 0;
-let joystickY = 0;
-let isShooting = false;
-let shootDirection = null;
+// خصائص اللاعب
+let player = {
+    x: canvas.width / 2,
+    y: canvas.height / 2,
+    radius: 20,
+    color: 'blue',
+    dx: 0,
+    dy: 0
+};
 
-// فقاعة اللاعب
-class Bubble {
-    constructor(x, y, color, id) {
-        this.x = x;
-        this.y = y;
-        this.color = color;
-        this.id = id;
-        this.radius = 30;
-    }
+// خصائص السهام
+let arrows = [];
 
-    draw() {
+// رسم الفقاعة
+function drawBubble() {
+    ctx.beginPath();
+    ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
+    ctx.fillStyle = player.color;
+    ctx.fill();
+    ctx.closePath();
+}
+
+// رسم السهام
+function drawArrows() {
+    arrows.forEach((arrow, index) => {
+        arrow.x += arrow.dx;
+        arrow.y += arrow.dy;
+
+        ctx.fillStyle = "yellow";
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fillStyle = this.color;
+        ctx.arc(arrow.x, arrow.y, 10, 0, Math.PI * 2);
         ctx.fill();
-        ctx.strokeStyle = "white";
-        ctx.stroke();
-    }
+
+        // حذف السهم إذا خرج من الشاشة
+        if (arrow.x < 0 || arrow.x > canvas.width || arrow.y < 0 || arrow.y > canvas.height) {
+            arrows.splice(index, 1);
+        }
+    });
 }
 
-// إنشاء الفقاعات (الأهداف)
-let bubbles = [];
-const colors = ["red", "blue", "green", "yellow", "purple"];
-for (let i = 0; i < 10; i++) {
-    let x = Math.random() * canvas.width;
-    let y = Math.random() * canvas.height;
-    let color = colors[i % colors.length];
-    bubbles.push(new Bubble(x, y, color, i));
-}
-
-// إعدادات الحركة عند استخدام عصا التحكم
-document.getElementById("joystick").addEventListener("mousemove", (e) => {
-    const joystick = document.getElementById("joystick");
-    const joystickRect = joystick.getBoundingClientRect();
-    const x = e.clientX - joystickRect.left;
-    const y = e.clientY - joystickRect.top;
-
-    const angle = Math.atan2(y - 50, x - 50);
-    const distance = Math.min(Math.sqrt(Math.pow(x - 50, 2) + Math.pow(y - 50, 2)), 40);
-
-    joystickX = Math.cos(angle) * distance;
-    joystickY = Math.sin(angle) * distance;
-
-    document.getElementById("joystickHandle").style.transform = `translate(${joystickX}px, ${joystickY}px)`;
-});
-
-// إعدادات زر إطلاق السهام
-document.getElementById("shootButton").addEventListener("click", () => {
-    isShooting = true;
-    shootDirection = Math.atan2(joystickY, joystickX);
-});
-
-// تحديث اللعبة في حلقة متكررة
-function gameLoop() {
+// تحديث اللعبة
+function updateGame() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // تحريك الفقاعة
-    if (joystickX !== 0 || joystickY !== 0) {
-        // تحرك اللاعب بناءً على عصا التحكم
-        const playerBubble = bubbles[0];
-        playerBubble.x += joystickX / 5;
-        playerBubble.y += joystickY / 5;
-    }
+    player.x += player.dx;
+    player.y += player.dy;
 
-    // رسم الفقاعات
-    bubbles.forEach(bubble => bubble.draw());
+    drawBubble();
+    drawArrows();
 
-    // إطلاق السهام إذا كان الزر مضغوطًا
-    if (isShooting && shootDirection !== null) {
-        const playerBubble = bubbles[0];
-        const arrowLength = 10;
-        ctx.beginPath();
-        ctx.moveTo(playerBubble.x, playerBubble.y);
-        ctx.lineTo(playerBubble.x + Math.cos(shootDirection) * arrowLength, playerBubble.y + Math.sin(shootDirection) * arrowLength);
-        ctx.strokeStyle = "white";
-        ctx.stroke();
-        isShooting = false;  // إعادة تعيين بعد إطلاق السهم
-    }
-
-    requestAnimationFrame(gameLoop);
+    requestAnimationFrame(updateGame);
 }
 
-gameLoop();
+// وظيفة تحريك الفقاعة
+document.addEventListener('touchmove', (event) => {
+    let touchX = event.touches[0].clientX;
+    let touchY = event.touches[0].clientY;
+
+    let dx = touchX - player.x;
+    let dy = touchY - player.y;
+    let distance = Math.sqrt(dx * dx + dy * dy);
+    
+    if (distance > 5) {
+        player.dx = dx / distance * 5;
+        player.dy = dy / distance * 5;
+    }
+});
+
+// إطلاق السهام
+function fireArrow() {
+    let arrow = {
+        x: player.x,
+        y: player.y,
+        dx: player.dx * 3,
+        dy: player.dy * 3
+    };
+    arrows.push(arrow);
+}
+
+// إضافة حدث الضغط على زر الإطلاق
+document.getElementById("fireButton").addEventListener("touchstart", fireArrow);
+
+// بدء اللعبة
+updateGame();
