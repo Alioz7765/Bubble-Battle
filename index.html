@@ -1,29 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bubble Game</title>
-    <!-- تضمين رابط لملف CSS -->
-    <link rel="stylesheet" href="styles.css">
-    <!-- تضمين بعض مكتبات الخطوط إذا كان ذلك مطلوبًا -->
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <title>لعبة الفقاعات بالسهام</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- عنصر Canvas الذي سيتم رسم اللعبة عليه -->
-    <canvas id="gameCanvas"></canvas>
-
-    <!-- زر الإطلاق الذي سيظهر في أسفل الشاشة -->
-    <div id="fireButton" onclick="fireArrow()">🔫</div>
-
-    <!-- تضمين ملف JavaScript الذي يحتوي على منطق اللعبة -->
-    <script src="game.js"></script>
-
-    <script>
-        // كود لضبط حجم الـ canvas بناءً على حجم الشاشة
-        const canvas = document.getElementById('gameCanvas');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    </script>
+    <div class="game-container">
+        <div class="game-area" id="gameArea"></div>
+        <div class="controls">
+            <div class="joystick-container">
+                <div class="joystick" id="joystick"></div>
+            </div>
+            <div class="shoot-area" id="shootArea">
+                <div class="arrow-power" id="arrowPower"></div>
+            </div>
+        </div>
+        <div class="game-info">
+            <div class="player-level">المستوى: <span id="playerLevel">1</span></div>
+            <div class="time-left">الوقت: <span id="timeLeft">30</span> ثانية</div>
+            <div class="players-count">اللاعبون: <span id="playersCount">10</span></div>
+        </div>
+    </div>
+    <div class="start-screen" id="startScreen">
+        <h1>فقاعات بالسهام</h1>
+        <p>أصيب الفقاعة التي تحمل نفس لونك قبل انتهاء الوقت!</p>
+        <button id="startButton">ابدأ اللعب</button>
+    </div>
+    <div class="end-screen hidden" id="endScreen">
+        <h1 id="endTitle">انتهت اللعبة!</h1>
+        <p id="endMessage"></p>
+        <button id="restartButton">العب مرة أخرى</button>
+    </div>
+    <script src="script.js"></script>
 </body>
-</html>
+        </html>
