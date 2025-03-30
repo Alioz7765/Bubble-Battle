@@ -1,106 +1,22 @@
-/* إعادة تعيين بعض القيم الافتراضية */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* تنسيق الصفحة بشكل عام */
 body {
-    font-family: 'Press Start 2P', cursive;
-    background-color: #f0f0f0;
-    color: #333;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    flex-direction: column;
-    overflow: hidden;
+    background-color: #222;
 }
 
-/* تنسيق الـ canvas لملاءمة حجم الشاشة */
-#gameCanvas {
-    background-color: #87CEEB; /* سماء زرقاء */
-    border: 2px solid #000;
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
+canvas {
+    width: 90vw;
+    height: 90vh;
+    max-width: 800px;
+    max-height: 600px;
+    background-color: white;
+    border: 2px solid black;
 }
-
-/* تنسيق زر الإطلاق */
-#fireButton {
-    position: absolute;
-    bottom: 50px;
-    right: 20px;
-    background-color: #ff6347;
-    border: none;
-    padding: 15px;
-    border-radius: 50%;
-    font-size: 25px;
-    color: white;
-    cursor: pointer;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4);
-    transition: transform 0.2s;
-}
-
-/* تأثير عند الضغط على زر الإطلاق */
-#fireButton:active {
-    transform: scale(0.9);
-}
-
-/* إضافة تنسيق للفقاعات */
-.bubble {
-    position: absolute;
-    border-radius: 50%;
-    transition: all 0.3s ease-in-out;
-}
-
-/* تأثيرات الفقاعة عند الحركة */
-.bubble.moving {
-    transition: transform 1s ease-in-out;
-}
-
-/* تنسيق للأهداف */
-.target {
-    position: absolute;
-    width: 50px;
-    height: 50px;
-    background-color: gold;
-    border-radius: 50%;
-    box-shadow: 0px 0px 15px rgba(255, 215, 0, 0.7);
-    transition: all 0.3s ease-in-out;
-}
-
-/* تخصيص الألوان لكل مستوى فقاعة */
-.bubble-level-1 {
-    background-color: rgba(255, 0, 0, 0.7);
-}
-.bubble-level-2 {
-    background-color: rgba(0, 255, 0, 0.7);
-}
-.bubble-level-3 {
-    background-color: rgba(0, 0, 255, 0.7);
-}
-.bubble-level-4 {
-    background-color: rgba(255, 255, 0, 0.7);
-}
-.bubble-level-5 {
-    background-color: rgba(255, 165, 0, 0.7);
-}
-
-/* الرسوم الخاصة بالسهام */
-.arrow {
-    position: absolute;
-    width: 10px;
-    height: 20px;
-    background-color: #ff4500;
-    border-radius: 5px;
-    transform-origin: center;
-}
-
-/* الرسومات التفاعلية للأهداف عند التصويب */
-.arrow.hit-target {
-    background-color: #32CD32;
-    transition: background-color 0.5s;
-    }
