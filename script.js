@@ -16,12 +16,21 @@ const endMessage = document.getElementById('endMessage');
 // إعدادات اللعبة
 const gameSettings = {
     playerSpeed: 3,
-    bubbleRadius: 30,
+    bubbleRadius: 25,
     arrowSpeed: 8,
-    colorChangeInterval: 10000, // 10 ثواني
-    gameDuration: 30000, // 30 ثانية
+    colorChangeInterval: 10000,
+    gameDuration: 30000,
     maxPlayers: 10
 };
+
+// مستويات اللعبة
+const levels = [
+    { name: 'قوس خشبي', emoji: '🏹', color: 'level-1', requiredDefeats: 10 },
+    { name: 'قوس حديدي', emoji: '🏹', color: 'level-2', requiredDefeats: 100 },
+    { name: 'سيف حديدي', emoji: '⚔', color: 'level-3', requiredDefeats: 1000 },
+    { name: 'سيف ذهبي', emoji: '⚔✨', color: 'level-4', requiredDefeats: 10000 },
+    { name: 'تاج', emoji: '👑', color: 'level-5', requiredDefeats: 1000000 }
+];
 
 // حالة اللعبة
 let gameState = {
@@ -45,22 +54,11 @@ let gameState = {
     playersDefeated: 0
 };
 
-// مستويات اللعبة
-const levels = [
-    { name: 'قوس خشبي', emoji: '🏹', color: 'level-1', requiredDefeats: 10 },
-    { name: 'قوس حديدي', emoji: '🏹', color: 'level-2', requiredDefeats: 100 },
-    { name: 'سيف حديدي', emoji: '⚔', color: 'level-3', requiredDefeats: 1000 },
-    { name: 'سيف ذهبي', emoji: '⚔✨', color: 'level-4', requiredDefeats: 10000 },
-    { name: 'تاج', emoji: '👑', color: 'level-5', requiredDefeats: 1000000 }
-];
-
 // تهيئة اللعبة
 function initGame() {
-    // إعداد عناصر التحكم
     setupJoystick();
     setupShootArea();
     
-    // إعداد أزرار البدء وإعادة اللعب
     startButton.addEventListener('click', startGame);
     restartButton.addEventListener('click', startGame);
 }
@@ -89,7 +87,6 @@ function setupShootArea() {
 
 // بدء اللعبة
 function startGame() {
-    // إعادة تعيين حالة اللعبة
     gameState = {
         player: null,
         bubbles: [],
@@ -109,28 +106,19 @@ function startGame() {
         playersDefeated: 0
     };
     
-    // تحديث واجهة المستخدم
     playerLevelElement.textContent = gameState.playerLevel;
     timeLeftElement.textContent = gameState.timeLeft;
     playersCountElement.textContent = gameSettings.maxPlayers;
     
-    // إخفاء شاشتي البداية والنهاية
     startScreen.classList.add('hidden');
     endScreen.classList.add('hidden');
     
-    // مسح منطقة اللعب
     gameArea.innerHTML = '';
     
-    // إنشاء اللاعب
     createPlayer();
-    
-    // إنشاء الفقاعات الأخرى (الخصوم)
     createBubbles();
-    
-    // بدء المؤقتات
     startTimers();
     
-    // بدء حلقة اللعبة
     requestAnimationFrame(gameLoop);
 }
 
@@ -141,15 +129,12 @@ function createPlayer() {
     bubble.style.width = `${gameSettings.bubbleRadius * 2}px`;
     bubble.style.height = `${gameSettings.bubbleRadius * 2}px`;
     
-    // وضع اللاعب في مركز الساحة
     const gameRect = gameArea.getBoundingClientRect();
     const centerX = gameRect.width / 2 - gameSettings.bubbleRadius;
     const centerY = gameRect.height / 2 - gameSettings.bubbleRadius;
     
     bubble.style.left = `${centerX}px`;
     bubble.style.top = `${centerY}px`;
-    
-    // إضافة رمز المستوى
     bubble.innerHTML = levels[gameState.playerLevel - 1].emoji;
     
     gameArea.appendChild(bubble);
@@ -167,18 +152,17 @@ function createPlayer() {
 // إنشاء الفقاعات الأخرى
 function createBubbles() {
     const gameRect = gameArea.getBoundingClientRect();
+    const radius = gameSettings.bubbleRadius;
     
     for (let i = 0; i < gameSettings.maxPlayers - 1; i++) {
         const bubble = document.createElement('div');
-        const radius = gameSettings.bubbleRadius;
-        const level = Math.floor(Math.random() * 5) + 1; // مستوى عشوائي من 1 إلى 5
+        const level = Math.floor(Math.random() * 5) + 1;
         const colorClass = `level-${level}`;
         
         bubble.className = `bubble ${colorClass}`;
         bubble.style.width = `${radius * 2}px`;
         bubble.style.height = `${radius * 2}px`;
         
-        // وضع عشوائي داخل الساحة مع تجنب المركز
         let x, y;
         do {
             x = Math.random() * (gameRect.width - radius * 2);
@@ -187,13 +171,10 @@ function createBubbles() {
         
         bubble.style.left = `${x}px`;
         bubble.style.top = `${y}px`;
-        
-        // إضافة رمز المستوى
         bubble.innerHTML = levels[level - 1].emoji;
         
         gameArea.appendChild(bubble);
         
-        // سرعة عشوائية للفقاعات
         const speed = 1 + Math.random() * 2;
         const angle = Math.random() * Math.PI * 2;
         
@@ -211,10 +192,8 @@ function createBubbles() {
 
 // بدء المؤقتات
 function startTimers() {
-    // مؤقت تغيير الألوان
     gameState.colorChangeTimer = setInterval(changeColors, gameSettings.colorChangeInterval);
     
-    // مؤقت اللعبة
     gameState.gameTimer = setInterval(() => {
         gameState.timeLeft--;
         timeLeftElement.textContent = gameState.timeLeft;
@@ -225,20 +204,17 @@ function startTimers() {
     }, 1000);
 }
 
-// تغيير ألوان الفقاعات
+// تغيير الألوان
 function changeColors() {
     if (!gameState.gameActive) return;
     
-    // تغيير لون اللاعب والخصوم
     const newColorIndex = Math.floor(Math.random() * 5);
     gameState.currentColor = `level-${newColorIndex + 1}`;
     
-    // تحديث لون اللاعب
     gameState.player.element.className = `bubble player-bubble ${gameState.currentColor}`;
     gameState.player.element.innerHTML = levels[gameState.playerLevel - 1].emoji;
     gameState.player.color = gameState.currentColor;
     
-    // تحديث ألوان الخصوم
     gameState.bubbles.forEach(bubble => {
         const newEnemyColorIndex = Math.floor(Math.random() * 5);
         const newEnemyColor = `level-${newEnemyColorIndex + 1}`;
@@ -253,19 +229,11 @@ function changeColors() {
 function gameLoop() {
     if (!gameState.gameActive) return;
     
-    // تحريك اللاعب
     movePlayer();
-    
-    // تحريك الخصوم
     moveBubbles();
-    
-    // تحريك السهام
     moveArrows();
-    
-    // التحقق من التصادمات
     checkCollisions();
     
-    // الاستمرار في الحلقة
     requestAnimationFrame(gameLoop);
 }
 
@@ -277,32 +245,27 @@ function movePlayer() {
     const gameRect = gameArea.getBoundingClientRect();
     const radius = gameSettings.bubbleRadius;
     
-    // تطبيق الحركة
     player.x += player.dx;
     player.y += player.dy;
     
-    // التحقق من حدود الساحة
     if (player.x < 0) player.x = 0;
     if (player.y < 0) player.y = 0;
     if (player.x > gameRect.width - radius * 2) player.x = gameRect.width - radius * 2;
     if (player.y > gameRect.height - radius * 2) player.y = gameRect.height - radius * 2;
     
-    // تطبيق الموضع الجديد
     player.element.style.left = `${player.x}px`;
     player.element.style.top = `${player.y}px`;
 }
 
-// تحريك الفقاعات (الخصوم)
+// تحريك الفقاعات
 function moveBubbles() {
     const gameRect = gameArea.getBoundingClientRect();
     const radius = gameSettings.bubbleRadius;
     
     gameState.bubbles.forEach(bubble => {
-        // تطبيق الحركة
         bubble.x += bubble.dx;
         bubble.y += bubble.dy;
         
-        // التحقق من حدود الساحة وارتداد الفقاعات
         if (bubble.x < 0 || bubble.x > gameRect.width - radius * 2) {
             bubble.dx *= -1;
             bubble.x = Math.max(0, Math.min(bubble.x, gameRect.width - radius * 2));
@@ -313,7 +276,6 @@ function moveBubbles() {
             bubble.y = Math.max(0, Math.min(bubble.y, gameRect.height - radius * 2));
         }
         
-        // تطبيق الموضع الجديد
         bubble.element.style.left = `${bubble.x}px`;
         bubble.element.style.top = `${bubble.y}px`;
     });
@@ -324,11 +286,9 @@ function moveArrows() {
     const gameRect = gameArea.getBoundingClientRect();
     
     gameState.arrows.forEach((arrow, index) => {
-        // تطبيق الحركة
         arrow.x += arrow.dx;
         arrow.y += arrow.dy;
         
-        // التحقق من خروج السهم من الساحة
         if (arrow.x < -20 || arrow.x > gameRect.width || 
             arrow.y < -20 || arrow.y > gameRect.height) {
             arrow.element.remove();
@@ -336,7 +296,6 @@ function moveArrows() {
             return;
         }
         
-        // تطبيق الموضع الجديد
         arrow.element.style.left = `${arrow.x}px`;
         arrow.element.style.top = `${arrow.y}px`;
     });
@@ -348,44 +307,31 @@ function checkCollisions() {
     
     gameState.arrows.forEach((arrow, arrowIndex) => {
         gameState.bubbles.forEach((bubble, bubbleIndex) => {
-            // حساب المسافة بين السهم والفقاعة
             const dx = (arrow.x + 10) - (bubble.x + radius);
             const dy = (arrow.y + 2.5) - (bubble.y + radius);
             const distance = Math.sqrt(dx * dx + dy * dy);
             
-            // إذا كان هناك تصادم
             if (distance < radius) {
-                // تأثير التصادم
                 bubble.element.classList.add('hit-animation');
                 setTimeout(() => {
                     bubble.element.classList.remove('hit-animation');
                 }, 300);
                 
-                // إزالة السهم
                 arrow.element.remove();
                 gameState.arrows.splice(arrowIndex, 1);
                 
-                // التحقق من لون الفقاعة
                 if (bubble.color === gameState.currentColor) {
-                    // إزالة الفقاعة
                     bubble.element.remove();
                     gameState.bubbles.splice(bubbleIndex, 1);
                     
-                    // زيادة عدد الخصوم المهزومين
                     gameState.playersDefeated++;
-                    
-                    // التحقق من ترقية المستوى
                     checkLevelUp();
-                    
-                    // تحديث عدد اللاعبين المتبقين
                     playersCountElement.textContent = gameState.bubbles.length + 1;
                     
-                    // التحقق من الفوز
                     if (gameState.bubbles.length === 0) {
                         endGame(true, "لقد فزت! أقصيت جميع الخصوم.");
                     }
                 } else {
-                    // الخسارة بسبب إصابة الفقاعة الخطأ
                     endGame(false, "أصبت الفقاعة الخطأ!");
                 }
             }
@@ -393,7 +339,7 @@ function checkCollisions() {
     });
 }
 
-// التحقق من ترقية مستوى اللاعب
+// ترقية المستوى
 function checkLevelUp() {
     const currentLevel = levels[gameState.playerLevel - 1];
     
@@ -401,7 +347,6 @@ function checkLevelUp() {
         gameState.playerLevel++;
         playerLevelElement.textContent = gameState.playerLevel;
         
-        // تحديث مظهر اللاعب
         gameState.player.element.className = `bubble player-bubble level-${gameState.playerLevel}`;
         gameState.player.element.innerHTML = levels[gameState.playerLevel - 1].emoji;
         gameState.player.level = gameState.playerLevel;
@@ -412,11 +357,9 @@ function checkLevelUp() {
 function endGame(win, message) {
     gameState.gameActive = false;
     
-    // إيقاف المؤقتات
     clearInterval(gameState.colorChangeTimer);
     clearInterval(gameState.gameTimer);
     
-    // عرض شاشة النهاية
     endScreen.classList.remove('hidden');
     endTitle.textContent = win ? "فوز!" : "هزيمة!";
     endMessage.textContent = message;
@@ -446,7 +389,6 @@ function handleJoystickMove(e) {
     const distance = Math.sqrt(dx * dx + dy * dy);
     const maxDistance = 40;
     
-    // حساب موضع العصا
     let moveX = dx;
     let moveY = dy;
     
@@ -457,7 +399,6 @@ function handleJoystickMove(e) {
     
     joystick.style.transform = `translate(${moveX}px, ${moveY}px)`;
     
-    // تحريك اللاعب
     if (gameState.player) {
         gameState.player.dx = (moveX / maxDistance) * gameSettings.playerSpeed;
         gameState.player.dy = (moveY / maxDistance) * gameSettings.playerSpeed;
@@ -471,7 +412,6 @@ function handleJoystickEnd(e) {
     gameState.joystickActive = false;
     joystick.style.transform = 'translate(0, 0)';
     
-    // إيقاف حركة اللاعب
     if (gameState.player) {
         gameState.player.dx = 0;
         gameState.player.dy = 0;
@@ -503,7 +443,6 @@ function handleShootMove(e) {
     const distance = Math.sqrt(dx * dx + dy * dy);
     const maxDistance = 50;
     
-    // حساب قوة السهم
     let power = Math.min(distance / maxDistance, 1);
     arrowPower.style.transform = `scale(${0.6 + power * 0.4})`;
 }
@@ -521,7 +460,6 @@ function handleShootEnd(e) {
     const distance = Math.sqrt(dx * dx + dy * dy);
     
     if (distance > 10) {
-        // إطلاق السهم
         shootArrow(dx, dy, distance);
     }
 }
@@ -534,11 +472,9 @@ function shootArrow(dx, dy, distance) {
     const power = Math.min(distance / maxDistance, 1);
     const angle = Math.atan2(dy, dx);
     
-    // إنشاء عنصر السهم
     const arrow = document.createElement('div');
     arrow.className = 'arrow';
     
-    // وضع السهم عند موضع اللاعب
     const arrowX = gameState.player.x + gameSettings.bubbleRadius;
     const arrowY = gameState.player.y + gameSettings.bubbleRadius;
     
@@ -548,7 +484,6 @@ function shootArrow(dx, dy, distance) {
     
     gameArea.appendChild(arrow);
     
-    // إضافة السهم إلى حالة اللعبة
     gameState.arrows.push({
         element: arrow,
         x: arrowX,
@@ -558,5 +493,5 @@ function shootArrow(dx, dy, distance) {
     });
 }
 
-// تهيئة اللعبة عند تحميل الصفحة
+// بدء اللعبة عند تحميل الصفحة
 window.addEventListener('load', initGame);
