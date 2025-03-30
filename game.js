@@ -1,7 +1,17 @@
+// ضبط حجم الشاشة تلقائيًا
+canvas.width = window.innerWidth * 0.9;
+canvas.height = window.innerHeight * 0.9;
 // تحديد العناصر من HTML
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
-
+document.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowLeft" && player.x > player.size) {
+        player.x -= player.speed;
+    }
+    if (event.key === "ArrowRight" && player.x < canvas.width - player.size) {
+        player.x += player.speed;
+    }
+});
 // إعدادات اللعبة
 const player = {
     x: canvas.width / 2,
