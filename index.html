@@ -4,12 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bubble Game</title>
+    <!-- تضمين رابط لملف CSS -->
     <link rel="stylesheet" href="styles.css">
+    <!-- تضمين بعض مكتبات الخطوط إذا كان ذلك مطلوبًا -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- عنصر Canvas الذي سيتم رسم اللعبة عليه -->
     <canvas id="gameCanvas"></canvas>
-    <div id="fireButton">🔫</div>
 
+    <!-- زر الإطلاق الذي سيظهر في أسفل الشاشة -->
+    <div id="fireButton" onclick="fireArrow()">🔫</div>
+
+    <!-- تضمين ملف JavaScript الذي يحتوي على منطق اللعبة -->
     <script src="game.js"></script>
+
+    <script>
+        // كود لضبط حجم الـ canvas بناءً على حجم الشاشة
+        const canvas = document.getElementById('gameCanvas');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    </script>
 </body>
 </html>
